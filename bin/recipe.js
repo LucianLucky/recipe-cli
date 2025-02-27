@@ -3,6 +3,8 @@
 const { program } = require('commander');
 const pkg = require('../package.json');
 const { addRecipe, getAllRecipes, searchRecipes } = require('../lib/storage');
+const { formatRecipe, formatRecipeList } = require('../lib/formatter');
+const chalk = require('chalk');
 
 program
   .version(pkg.version)
@@ -20,7 +22,7 @@ program
       instructions: options.steps || ''
     };
     if (addRecipe(recipe)) {
-      console.log(`Recipe "${name}" added successfully!`);
+      console.log(chalk.green(`✓ Recipe "${name}" added successfully!`));
     }
   });
 
@@ -29,16 +31,7 @@ program
   .description('List all recipes')
   .action(() => {
     const recipes = getAllRecipes();
-    if (recipes.length === 0) {
-      console.log('No recipes found.');
-      return;
-    }
-    recipes.forEach(recipe => {
-      console.log(`\n[${recipe.id}] ${recipe.name}`);
-      if (recipe.ingredients.length > 0) {
-        console.log(`  Ingredients: ${recipe.ingredients.join(', ')}`);
-      }
-    });
+    console.log(formatRecipeList(recipes));
   });
 
 program
@@ -46,14 +39,7 @@ program
   .description('Search for recipes')
   .action((query) => {
     const results = searchRecipes(query);
-    if (results.length === 0) {
-      console.log(`No recipes found for "${query}"`);
-      return;
-    }
-    console.log(`Found ${results.length} recipe(s):`);
-    results.forEach(recipe => {
-      console.log(`\n[${recipe.id}] ${recipe.name}`);
-    });
+    console.log(formatRecipeList(results));
   });
 
 program.parse(process.argv);
