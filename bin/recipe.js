@@ -60,4 +60,16 @@ program
     }
   });
 
+program
+  .command('delete <id>')
+  .description('Delete a recipe by ID')
+  .action((id) => {
+    const { deleteRecipe } = require('../lib/storage');
+    if (deleteRecipe(parseInt(id))) {
+      console.log(chalk.green(`✓ Recipe deleted`));
+    } else {
+      console.log(chalk.red(`✗ Recipe not found`));
+    }
+  });
+
 program.parse(process.argv);
